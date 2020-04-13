@@ -1,0 +1,363 @@
+One Sampled T Test
+
+A one sample test of means, compares the mean of a sample test to a pre specified value and tests for a deviation from that value
+
+step 1: Stating the hypothesis
+U is the sample mean
+U0 is the hypothesized mean
+Null Hypothesis: Ho: U = U0
+Alternative Hypothesis: H1: U != U0 (Two tailed)
+                        H1: U > U0 (One tailed)
+                        H1: U < U0 (One tailed)
+                        
+Step 2: calculate the tcalc
+variables needed:
+                  sample mean
+                  hypothesised mean
+                  sample standard deviation
+                  sample size
+tcalc = (sample mean - hypothesised mean)/ (sample standard deviation / sqrt of sample size)
+
+Step 3: calculate the degrees of freedom
+sample size - 1
+n-1
+
+step 4: calculate the confidence level
+alpha = 100% - confidence level
+examples :  95% :100% - 95% = 5% ; 0.05
+            99% :100% - 99% = 1% ; 0.01
+            90% :100% - 90% = 10%; 0.1
+            
+Step 5: t tabulated values
+Reading values in the table
+t table if less than 30 in sample size
+z table if more than 30 in sample size
+for one tailed: (alpha, df)
+for two tailed: (alpha/2, df)
+
+Reading the code in R for the values
+qt(area to the left of the critical value, df)
+
+Step 6: Conclusion
+if the tcalc value lies in the shaded region we reject the null hypothesis if it lies in the acceptance region
+we fail to reject the null hypothesis
+
+Step 7 reading in the one line code in R
+t.test(data, mu =)
+mu is the null hypothesised mean
+if one tailed specify alternative = "less" or "greater"
+default confidence level is 95% otherwise specify on conf.level =
+
+
+Examples on One Sample T test
+1.Your company wants to improve sales. Past sales data indicate that the average sales was $100 per transaction. After training your sales force, recent sales data (taken from a sample of 25 salesmen), indicates an average sales of $130, with a standard deviation of $15. Did the training work? Test your hypothesis at 5% alpha level.
+
+stating the hypothesis
+H0: Null Hypothesis U = U0: U = 100
+H1: ALternative Hypothesis U >U0: U > 100
+
+calculating tcalc
+sample size = 25
+sample mean = 130
+sample sd = 15
+alpha = 0.05
+
+tcalc is (sample mean - hypothesised mean)/ (sample sd / sqrt of sample size)
+tcalc <- (130 - 100) / (15 / sqrt (25))
+tcalc
+
+calculating degrees of freedom
+sample size - 1
+25 -1 = 24
+
+calculating the confidence level
+0.05(given)
+
+the ttab
+(0.05, 24) : 1.711
+
+R
+qt((1-0.05), 24) ; 1.710882
+
+conclusion
+The tcalc value which is ten lies on the right side of the critical value there we reject the null hypothesis
+
+t.test
+
+2. Consider 20 first year resident female doctors drawn at random from one area. Their resting systolic blood pressures were measured using an electronic gadget. The following values were obtained: 128, 118, 144, 133, 132, 111, 149, 139, 136, 126, 127, 115, 142, 140, 131, 132, 122, 119, 129, 128. From previous large studies of women drawn at random from the general healthy public, a resting systolic blood pressure of 120 was predicted as the population mean for the relevant age group.Test to see whether this is the case at 95% significance level.
+
+stating the hypothesis
+H0: U = U0: U = 120
+H1: U != U: U != 120
+
+calculating the tcalc
+sample size = 20
+hypothesised mean =120
+sbp<-c(128, 118, 144, 133, 132, 111, 149, 139, 136, 126, 127, 115, 142, 140, 131, 132, 122, 119, 129, 128)
+sample.sbp.mean<- mean(sbp) : 130.05
+sample.sbp.sd<-sd(sbp): 9.960316
+tstat <- ((sample.sbp.mean - 120) / (sample.sbp.sd / sqrt(20))) : 4.512404
+
+calculating the degrees of freedom
+sample size - 1
+20 - 1 = 19
+
+calculating the confidence level
+100% - 95% = 5%: 0.05
+
+Ttab
+(0.05/2, 19): 
+R
+qt(0.05/2, 19): -2.093024, 2.093024
+
+Conclusion
+the tcalc lies on the right side of the positive vritical value therefore we reject the null hypothesis that the average sbp mean is not same
+
+t.test(sbp, mu = 120):
+One Sample t-test
+
+data:  sbp
+t = 4.5124, df = 19, p-value = 0.0002384
+alternative hypothesis: true mean is not equal to 120
+95 percent confidence interval:
+ 125.3884 134.7116
+sample estimates:
+mean of x 
+   130.05 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+
+
+Two Sampled T Test
+
+A two sample test of means, compares the means of two different datasets but independent population
+
+step 1: Stating the hypothesis
+U1 is the mean of first group
+U2 is the mean of the second group
+Null Hypothesis: Ho: U1 - U2 = 0
+Alternative Hypothesis: H1: U1 - u2 != 0 (Two tailed)
+                        H1: U1 - U2 > 0: U1> U2 (One tailed)
+                        H1: U1 - U2 < 0: U1< U2 (One tailed)
+                        
+Step 2: calculate the tcalc
+variables needed:
+                  sample mean
+                  hypothesised mean
+                  sample standard deviation
+                  sample size
+We need to determine whether the datasets have equal or unequal variance we use var.test(data1, data2)
+if the pvalue of the Ftest is greater then the alpha value we assume equal variances otherwise we assume unequal variances
+Equal Variance
+sp: pooled standard variance
+sp = sqrt(((n1 - 1)*s1^2 + (n2 - 1)*s2^2)/n1 +n2 -2)
+t = (mean 1 - mean 2 - difference of hypothesised mean) / (sp * sqrt (1/n1 + 1/n2))
+
+unequal variance
+t = (mean 1 - mean 2 - difference in hypothesised means)/ sqrt(s1^2/n1 s2^2/n2)
+df
+Step 3: calculate the degrees of freedom
+for equal variance:
+ndf = 1 + n2 -2
+
+for unequal variance:
+df =(s1^2/n1 + s2^2/n2)^2 /( ((1/n1 -1)*(s1^2/n1)^2) + (1/n2 - 1 *(s2^2/n2)^2)) 
+
+step 4: calculate the confidence level
+alpha = 100% - confidence level
+examples :  95% :100% - 95% = 5% ; 0.05
+            99% :100% - 99% = 1% ; 0.01
+            90% :100% - 90% = 10%; 0.1
+            
+Step 5: t tabulated values
+Reading values in the table
+t table if less than 30 in sample size
+z table if more than 30 in sample size
+for one tailed: (alpha, df)
+for two tailed: (alpha/2, df)
+
+Reading the code in R for the values
+qt(area to the left of the critical value, df)
+
+Step 6: Conclusion
+if the tcalc value lies in the shaded region we reject the null hypothesis if it lies in the acceptance region
+we fail to reject the null hypothesis
+
+Step 7 reading in the one line code in R
+t.test(data1, data2,)
+var.equal = T
+if one tailed specify alternative = "less" or "greater"
+default confidence level is 95% otherwise specify on conf.level =
+
+
+Example Question
+From the Wafanyikazi dataset, test whether there is a difference in the mean age between single females and married females. First carry out the calculations in R, then run the t.test() code to confirm the answer. The conclusions should be the same. 
+
+reading in the dataset
+wafanyikazi <-read.csv("C:\\Users\\User\\Desktop\\Amandla\\wafanyikazi.csv")
+wafanyikazi
+
+(age.single.females <- wafanyikazi %>% 
+filter(Gender == "Female") %>% 
+filter(Marital_Status == "Single") %>% 
+select(Age) %>% 
+pull())
+
+age.married.females<- wafanyikazi %>% 
+filter( Gender == "Female") %>% 
+filter(Marital_Status=="Married") %>% 
+select(Age) %>% 
+pull()
+
+stating the hypothesis
+Null Hypothesis: H0 U1 - U2 = 0
+Alternative Hypothesis: H1: U1 - U2 != 0
+
+testing whether the population has equal or unequal variance
+var.test(age.single.females, age.married.females)
+
+F test to compare two variances
+
+data:  age.single.females and age.married.females
+F = 1.0106, num df = 73, denom df = 84, p-value = 0.9588
+alternative hypothesis: true ratio of variances is not equal to 1
+95 percent confidence interval:
+ 0.6487445 1.5854217
+sample estimates:
+ratio of variances 
+          1.010586
+          
+since the pvalue is greater than the alpha value, we assume equal variances
+
+calculating the tcalc
+n1<- length (age.single.females) : 74
+n2<- length(age.married.females): 85
+s1 <- sd(age.single.females) : 9.924866
+s2<- sd(age.married.females) : 9.872748
+barx1<- mean(age.single.females) :  35.17568
+barx2<- mean(age.married.females): 33.87059
+
+pooled standard variance
+psd<- (((n1 - 1)*s1^2) + ((n2 - 1)* s2^2)) / (n1 + n2 - 2) : 97.95091
+tcalculated<- (barx1 - barx2 - 0) / (psd * sqrt(1/n1 + 1/n2)) : 0.08380268
+
+calculating the degrees of freedom
+n1 + n2 - 2 = 157
+
+calculating the confidence level 
+100% - 95% = 5%  0.05
+
+the ttab
+(0.05/2, 157)
+R
+qt(0.05/2, 157) : -1.975189, 1.975189
+
+Conclusion 
+The tcalc value lies in between the critical values therefore we fail to reject the null hypothesis
+
+Verifier
+The one line of R code
+t.test(age.single.females, age.married.females, var.equal = TRUE )
+
+
+
+
+
+
+
+Paired T Test
+it is also known as dependent sample t test
+it is a statistical procedure used to determine whether the mean difference between 2 sets of observations is zero
+in this test each subject is measured twice, resulting in pairs of observations
+eg. Rat before calss and same Rat after class
+
+step 1: Stating the hypothesis
+U1 is the sample mean of score before
+U2 is the sample mean of score after
+Null Hypothesis: Ho: U2 -U1 = 0
+Alternative Hypothesis: H1: U2 - U1 != 0 (Two tailed)
+                        H1: U2 - U1 > 0 : U2 > U1(One tailed)
+                        H1: U2 - U1 < 0 :U2 < U1(One tailed)
+                        
+Step 2: calculate the tcalc
+variables needed:
+                xi= pre scores
+                yi = post scores
+                di = difference in scores : yi - xi
+                mean(di)
+                sd(di)
+                sample size(di)
+tcalc = (mean of difference - hypothesised difference)/ (sd of difference / sqrt(sample size of difference))
+
+Step 3: calculate the degrees of freedom
+sample size - 1
+n-1
+
+step 4: calculate the confidence level
+alpha = 100% - confidence level
+examples :  95% :100% - 95% = 5% ; 0.05
+            99% :100% - 99% = 1% ; 0.01
+            90% :100% - 90% = 10%; 0.1
+            
+Step 5: t tabulated values
+Reading values in the table
+t table if less than 30 in sample size
+z table if more than 30 in sample size
+for one tailed: (alpha, df)
+for two tailed: (alpha/2, df)
+
+Reading the code in R for the values
+qt(area to the left of the critical value, df)
+
+Step 6: Conclusion
+if the tcalc value lies in the shaded region we reject the null hypothesis if it lies in the acceptance region
+we fail to reject the null hypothesis
+
+Step 7: Verifier
+t.test(post data, pre data, paired = TRUE)
+if one tailed specify alternative = "less" or "greater"
+default confidence level is 95% otherwise specify on conf.level =
+
+Example Question
+As an example of data, 10 mice received a treatment X during 3 months. We want to know whether the treatment X has an impact on the weight of the mice.
+To answer to this question, the weight of the 10 mice has been measured before and after the treatment. This gives us 10 sets of values before treatment and 10 sets of values after treatment from measuring twice the weight of the same mice.
+before <-c(200.1, 190.9, 192.7, 213, 241.4, 196.9, 172.2, 185.5, 205.2, 193.7)
+after <-c(392.9, 393.2, 345.1, 393, 434, 427.9, 422, 383.9, 392.3, 352.2)
+
+stating the hypothesis
+H0: U2 - U1 = 0
+H1: U2 - U1 !=0
+
+calculating t calc
+variables needed:
+              diff <- after - before 
+              diff.mean <- mean(diff) : 194.49
+              diff.sd <- sd(diff) : 29.45111
+              diff.length <- length(diff) :10
+tcalcu <- (diff.mean - 0) / (diff.sd/ sqrt(diff.length)) :20.88313
+
+calculating degrees of freedom
+10 - 1 = 9
+
+calculating confidence level
+100% - 95% = 5%  0.05
+
+Reading Values
+ttab
+(0.05/2, 9): 2.262
+
+R
+qt(0.05/2,9) : -2.262157, 2.262157
+
+conclusion 
+since the tcalc value lies on the right side of the positive critical value we reject the null hypothesis that the treatment does not have an impact on the weight of the mice
+
+Verifier
+t.test(after, before, paired = TRUE)
